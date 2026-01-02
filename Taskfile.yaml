@@ -1,0 +1,7 @@
+version: '3'
+
+tasks:
+  build-agent:
+    cmds:
+      - bun build --compile --minify ./index.ts  --outfile ./dist/git-agent
+    desc: Build the agent code
