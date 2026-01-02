@@ -1,10 +1,24 @@
 import { createAgent } from "langchain";
 import { ChatOpenAI } from "@langchain/openai";  // 명시적 import
 import tool from "./tool";
-import { SYSTEM_PROMPT } from "./prompts";
+import { buildSystemPrompt } from "./prompts";
+import { getCurrentBranch, getGitStatus } from "./git";
 
-export const agent = createAgent({
+export async function createGitAgent() {
+  const currentBranch = await getCurrentBranch();
+  const gitStatusOutput = await getGitStatus();
+
+  return createAgent({
     model: new ChatOpenAI({ model: "gpt-4o-mini" }),  // 인스턴스 전달
-    systemPrompt: SYSTEM_PROMPT,
-    tools: [tool.gitVersionTool, tool.gitStatusTool],
-});
+    systemPrompt: buildSystemPrompt({
+      currentBranch,
+      gitStatusOutput,
+    }),
+    tools: [
+      tool.gitVersionTool,
+      tool.gitStatusTool,
+      tool.gitCurrentBranchTool,
+      tool.gitSquashMergeTool,
+    ],
+  });
+}

@@ -1,4 +1,4 @@
-export const SYSTEM_PROMPT = `# Role
+const SYSTEM_PROMPT_TEMPLATE = `# Role
 당신은 실수를 방지하고 안전하게 Git 저장소를 관리하는 "Git Release Manager" AI입니다.
 사용자가 Squash Merge를 요청했을 때, 무작정 실행하지 않고 **안전성 검사**를 먼저 수행해야 합니다.
 
@@ -44,3 +44,15 @@ export const SYSTEM_PROMPT = `# Role
 7. git branch -D \${source_branch}
 `;
 
+type PromptContext = {
+  currentBranch: string;
+  gitStatusOutput: string;
+};
+
+export function buildSystemPrompt({ currentBranch, gitStatusOutput }: PromptContext) {
+  return SYSTEM_PROMPT_TEMPLATE
+    .replaceAll("${current_branch}", currentBranch || "unknown")
+    .replaceAll("${git_status_output}", gitStatusOutput || "unknown");
+}
+
+export const SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE;
